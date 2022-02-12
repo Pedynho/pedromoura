@@ -9,11 +9,16 @@
         formato <tt>[ texto, idx ]</tt> ('texto' sendo a opção em si, e 'idx' seu índice na lista)
         para leitura pelo componente pai.
     </div>
-
-    <div class="dropdown" :class="{'down': estado}"> {{ opcaoSelecionada }} ⬇ </div>
-    <ul :class="{'opcoes': estado}">
-        <!-- OPÇÕES PASSADAS (INDICANDO A ATUAL SELECIONADA) -->
-    </ul>
+    <div class="dropdown-container">
+        <div class="dropdown-body">
+            <div @click="showOptions" class="dropdown"> {{ opcaoSelecionada }} ⬇ </div>
+            <div v-if="listOptions" class="list-options">
+                <ul class="options">
+                    <li  v-for="(option, i) in opcoesDD" :key="i" @click="choseOption(i)" :class="{'selected': option === this.opcaoSelecionada}">{{option}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -24,29 +29,69 @@
         },
         data() {
             return {
-                opcaoSelecionada: "..."
+                listOptions: false,
+                opcaoSelecionada: this.$props.opcoesDD[0]
             };
         },
-        computed: {
-            estado() { return true; }
-        },
         methods: {
-            // Permitir ler dados...
+            showOptions(){
+                this.listOptions = !this.listOptions
+
+            },
+            choseOption(i){
+                this.opcaoSelecionada = this.$props.opcoesDD[i]
+                this.$emit("opSelected",[this.opcaoSelecionada, i])
+                this.listOptions = !this.listOptions
+            }
         },
         // Atualizar dados com opções passadas...
     }
 </script>
 
 <style scoped>
- .dropdown {
-     cursor: pointer;
-     border: 1px solid #2c3e50;
-     border-radius: 5px;
-     width: fit-content;
-     padding: 5px;
- }
-
- .down {  }
-
- .opcoes {  }
+    .dropdown-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2em;
+    }
+    .dropdown-body{
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        border-radius: 10px;
+        border: 2px solid #ccc;
+        box-shadow: 0 0 4px 3px rgba(0,0,0,0.12);
+        padding: 10px;
+        width: fit-content;
+    }
+    .list-options{
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: white;
+        border-radius: 10px;
+        border: 2px solid #ccc;
+        box-shadow: 0 0 4px 3px rgba(0,0,0,0.12);
+        width: 100%;
+    }
+    .dropdown{
+        padding: 5px;
+    }
+    .options{
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    .options li {
+        padding: 5px;
+    }
+    .selected {
+        background-color: lightskyblue;
+        border-radius: 5px;
+    }
 </style>
