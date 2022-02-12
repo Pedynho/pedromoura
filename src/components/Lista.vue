@@ -12,20 +12,27 @@
     op2: String
 }</code></pre>
     </div>
-
-    Indicadores:
-    <ul>
-        <li v-if="placeholder">LISTA VAZIA</li>
-        <li v-if="placeholder">MAIS DE 5 ELEMENTOS</li>
-        <li v-if="placeholder">UMA OU MAIS ENTRADAS NÃO RESPEITA O FORMATO</li>
-    </ul>
-
-    <div class="entradas">
-        <div class="entrada" v-for="i in lista" v-bind:key="i">
+    <div class="entradas-container">
+        <div class="entradas">
+            <div class="entrada" v-for="i in lista" :key="i.id">
+                <div class="element-options" :id="i.id">
+                    <span>Entrada Nº {{i.id}}</span>
+                    <input type="text" v-model="i.op1" placeholder="Option 1">
+                    <input type="text" v-model="i.op2" placeholder="Option 2">
+                </div>
+            </div>
+            <button type="submit" @click="update" class="form-button">Atualizar</button>
         </div>
     </div>
 
-    <button type="submit" @click="update" class="form-button">Atualizar</button>
+    Indicadores:
+    <ul>
+        <li v-if="!lista">LISTA VAZIA</li>
+        <li v-if="lista.length > 5">MAIS DE 5 ELEMENTOS</li>
+        <li v-if="entradasValidas">UMA OU MAIS ENTRADAS NÃO RESPEITA O FORMATO</li>
+    </ul>
+
+
 </template>
 
 <script>
@@ -39,15 +46,25 @@
         },
         data() {
             return {
-                lista: [""] // deve representar a lista dada
+                lista: this.$props.dados,
+                placeholder: true,
             };
         },
-        watch: {},
-        computed: {
-            placeholder() { return true; },
+        computed:{
+            entradasValidas(){
+                let validos = true
+                this.lista.forEach((e) => {
+                    if(e.op1.match(/[0-9]\.[0-9]/g) == null || e.op2.match(/[0-9]\.[0-9]/g) == null){
+                        validos = false
+                    }
+                })
+                return !validos
+            }
         },
         methods: {
             update() {
+                console.log(this.lista[1].op1)
+                this.$emit("mudancaEmitida",this.lista)
             }
         }
     }
@@ -66,12 +83,32 @@
      cursor: pointer;
  }
 
- .entradas {
-     width: 100%;
+.entradas{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    box-shadow: 0 0 4px 3px rgba(0,0,0,0.12);
+    padding: 10px;
+    width: fit-content;
+}
+
+ .entradas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
  }
 
- .entrada {
-     /* ... */
+ .element-options{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+ }
+ .element-options input{
+    margin: 5px;
+    padding: 5px;
  }
 
  .json-example {
